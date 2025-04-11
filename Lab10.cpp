@@ -2,7 +2,7 @@
 #include <string> //for strings
 #include <fstream> //for file input and output
 using namespace std; //make my life easier
-
+//used some help from stackoverflow and chatgpt to help with some of the adder/subtractor logic, and trimming whitespace, but everything else was written solely by me.
 string trim(const string& str) { //deal with whitespace
     size_t first = str.find_first_not_of(" \t\n\r"); //remove beginning whitespace
     size_t last = str.find_last_not_of(" \t\n\r"); //remove ending whitespace
@@ -10,7 +10,7 @@ string trim(const string& str) { //deal with whitespace
         return ""; //return empty string
     return str.substr(first, last - first + 1); //return trimmed string
 }
-bool valid_num(string input) { //function to check if the string is a valid number
+bool valid_double(string input) { //function to check if the string is a valid number
     int periods = 0; // Variable to count the number of periods
     int length = input.length(); //get the length of the string
     if (length == 0) return false; // Empty string is not a valid number
@@ -89,11 +89,19 @@ string adder(string input1, string input2) { //function to add two strings toget
         fractional_result.insert(fractional_result.begin(), (sum % 10) + '0'); //insert the result into the string
     }
     //integer handling
-    string integer_result;
+    string integer_result; //create a result strinig
     int i = int1.length() - 1, j = int2.length() - 1; //loop through the integer portion of string 1
     while (i >= 0 || j >= 0 || carry) { //while there are still characters in the string
-        int digit1 = (i >= 0) ? int1[i--] - '0' : 0; //convert the character to an integer
-        int digit2 = (j >= 0) ? int2[j--] - '0' : 0; //convert the character to an integer
+        int digit1=0; //initialize digit1 to 0
+        int digit2=0; //initialize digit2 to 0
+        if (i>=0) { //if there are still characters in string 1
+            digit1 = int1[i] - '0'; //convert the character to an integer
+            i--; //decrement i to move to the next character
+        }
+        if (j>=0) { //if there are still characters in string 2
+            digit2 = int2[j] - '0'; //convert the character to an integer
+            j--; //decrement j to move to the next character
+        }
         int sum = digit1 + digit2 + carry; //add the two digits together and add the carry over
         carry = sum / 10; //calculate the carry over
         integer_result.insert(integer_result.begin(), (sum % 10) + '0'); //insert the result into the string
@@ -107,7 +115,7 @@ string adder(string input1, string input2) { //function to add two strings toget
     }
 }
 
-string subtracter(string string1, string string2) { //if one of the strings contains a negative, this function will handle the subtraction of the two strings
+string subtracter(string string1, string string2) { //if string 1 is negative, run the subtractor
     bool negative = false; //initalize a boolean if we will need to add a negative to the end or not
     if (string1.length() < string2.length() || (string1.length() == string2.length() && string1 < string2)) { //if the length of string 1 is less than string 2, or they have an equal length, and string 1 is lexographically less than string 2
         swap(string1, string2); //swap the contents of the two strings to make subtraction easier
@@ -140,8 +148,16 @@ string subtracter(string string1, string string2) { //if one of the strings cont
     int i = int1.length() - 1; //initialize i to the end of string 1
     int j = int2.length() - 1; //initialize j to the end of string 2
     while (i >= 0 || j >= 0 || borrow) { //while there are still characters in the string and the borrow value is not 0
-        int digit1 = (i >= 0) ? int1[i--] - '0' : 0; //convert the character to an integer
-        int digit2 = (j >= 0) ? int2[j--] - '0' : 0; //convert the character to an integer
+        int digit1=0; //initialize digit1 to 0
+        int digit2=0; //initialize digit2 to 0
+        if (i>=0) { //if i is greater than 0
+            digit1 = int1[i] - '0'; //convert the character to an integer
+            i--; //decrease i to move to the next character
+        }
+        if (j>=0) { //if j is greater than 0
+            digit2 = int2[j] - '0'; //convert the character to an integer
+            j--; //decrease j to move to the next character
+        }
         int diff = digit1 - digit2 - borrow; //subtract the two digits and subtract the borrow value
         if (diff < 0) { //if the result is negative
             diff += 10; //add 10 to the result
@@ -152,11 +168,9 @@ string subtracter(string string1, string string2) { //if one of the strings cont
         }
         integer_result.insert(integer_result.begin(), diff + '0'); //add it to the result string
     }
-
     while (integer_result.length() > 1 && integer_result[0] == '0') { //if the first character is a zero, and it is not the only character in the string
         integer_result.erase(integer_result.begin()); //remove it
     }
-
     if (!fractional_result.empty()) { //if there are items in the decimal portion of the string
         while (fractional_result.length() > 1 && fractional_result.back() == '0') { //if the last character is a zero, and it is not the only character in the string
             fractional_result.pop_back(); //remove it
@@ -165,7 +179,6 @@ string subtracter(string string1, string string2) { //if one of the strings cont
             integer_result += "." + fractional_result; //concatenate them into one string, and return them
         }
     }
-
     if (negative) { //if the negative boolean we set earlier is set to true
         integer_result.insert(integer_result.begin(), '-'); //add a negative symbol in front
     }
@@ -174,13 +187,11 @@ string subtracter(string string1, string string2) { //if one of the strings cont
 
 string handler(string string1, string string2) { //function to handle the addition and subtraction of the two strings
     bool negative1=false; //initialize negative1 to false
-    bool negative2=false; //initialize negative2 to false
     if (string1[0]=='-'){ //if the first string is negative
         negative1=true; //set negative1 to true
         string1=string1.substr(1); //remove the negative sign from the first string
     }
     if (string2[0]=='-'){ //if the second string is negative
-        negative2=true; //set negative2 to true
         string2=string2.substr(1); //remove the negative sign from the second string
     }
     if (string1[0]=='+'){ //if the first string is positive
@@ -189,19 +200,12 @@ string handler(string string1, string string2) { //function to handle the additi
     if (string2[0]=='+'){ //if the second string is positive
         string2=string2.substr(1); //remove the positive sign from the second string
     }
-    if (negative1 && negative2){ //if both strings are negative
+    if (negative1){ //if both strings are negative
         return "-"+adder(string1,string2); //return the sum of the two strings with a negative sign
     }
-    else if (negative1 && !negative2){ //if the first string is negative and the second string is positive
-        return subtracter(string2,string1); //return the sum of the two strings without a negative sign
-    }
-    else if (!negative1 && negative2){ //if the first string is positive and the second string is negative
+    else{ //if the first string is positive and the second string is negative
         return subtracter(string1,string2); //return the sum of the two strings without a negative sign
     }
-    else{ //if both strings are positive
-        return adder(string1,string2); //return the sum of the two strings without a negative sign
-}
-
 }
 int main() { //main function
     string name; // Create a string to hold the name of the file
@@ -213,23 +217,14 @@ int main() { //main function
         string num; // Create a string to hold each line
         if (getline(file, num)) {//take in the first line to start the running total
             num = trim(num); // Trim the string
-            if (valid_num(num)) { // If the string is a valid number
-                total=num; // Initialize the running total as the first line
+            if (valid_double(num)) { // If the string is a valid double
+                total=handler(num,"-123.456"); //add -123.456 from the first number
+                cout << "Total sum of valid numbers: " << total << endl; //print total
             } 
-            else {
+            else { //if it fails the double check
                 cout << "Invalid number: " << num << endl; // Print the invalid number
             }
         }
-        while (getline(file, num)) { //go through the rest of the file
-            num = trim(num); // Trim the string
-            if (valid_num(num)) { // If the string is a valid number
-                total = handler(total, num); // Add the number to the runningtotal
-            } 
-            else {
-                cout << "Invalid number: " << num << endl; //Output that they put in a bad number
-            }
-        }
-        cout << "Total sum of valid numbers: " << total << endl; //final total
     } 
     else { //error handling
         cout <<name<<" does not exist, or may have issues." << endl;
