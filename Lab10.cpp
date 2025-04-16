@@ -213,7 +213,7 @@ int main() { //main function
     cin >> name; // Take in a file name
     ifstream file(name); // Open file
     string total;
-    if (file.is_open()) { // Check if file is open
+    while (file.is_open()) { // Check if file is open
         string num; // Create a string to hold each line
         if (getline(file, num)) {//take in the first line to start the running total
             num = trim(num); // Trim the string
@@ -225,9 +225,9 @@ int main() { //main function
                 cout << "Invalid number: " << num << endl; // Print the invalid number
             }
         }
-    } 
-    else { //error handling
-        cout <<name<<" does not exist, or may have issues." << endl;
+        else{
+            return 0;
+        }
     }
     return 0;
 }
