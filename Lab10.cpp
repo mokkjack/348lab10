@@ -26,9 +26,11 @@ bool valid_double(string input) { //function to check if the string is a valid n
             if (input[i]==length-1){
                 return false; // Period at the end of the string is invalid
             }
-        } else if (isdigit(input[i])) { // Check if the character is a digit
+        } 
+        else if (isdigit(input[i])) { // Check if the character is a digit
             hasDigits = true; // Mark that we have seen a digit
-        } else { // Any other character is invalid
+        } 
+        else { // Any other character is invalid
             return false;
         }
     }
@@ -200,6 +202,9 @@ string handler(string string1, string string2) { //function to handle the additi
     if (string2[0]=='+'){ //if the second string is positive
         string2=string2.substr(1); //remove the positive sign from the second string
     }
+    while (string1[0]=='0' && string1.length()>1){ //if the first string is a zero, and it is not the only character in the string
+        string1.erase(string1.begin()); //remove it
+    }
     if (negative1){ //if both strings are negative
         return "-"+adder(string1,string2); //return the sum of the two strings with a negative sign
     }
@@ -213,6 +218,10 @@ int main() { //main function
     cin >> name; // Take in a file name
     ifstream file(name); // Open file
     string total;
+    if (!file.is_open()) { //if we can't open the file
+        cout << "Error opening file, file may not exist" << endl; //error handling
+        return 0; //end program
+    }
     while (file.is_open()) { // Check if file is open
         string num; // Create a string to hold each line
         if (getline(file, num)) {//take in the first line to start the running total
