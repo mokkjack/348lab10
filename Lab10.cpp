@@ -228,7 +228,7 @@ int main() { //main function
             num = trim(num); // Trim the string
             if (valid_double(num)) { // If the string is a valid double
                 total=handler(num,"-123.456"); //add -123.456 from the first number
-                cout << "Total sum of valid numbers: " << total << endl; //print total
+                cout << "Result after adding -123.456: " << total << endl; //print total
             } 
             else { //if it fails the double check
                 cout << "Invalid number: " << num << endl; // Print the invalid number
